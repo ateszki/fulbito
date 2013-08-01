@@ -1,6 +1,7 @@
 # encoding: utf-8
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 # Create your models here.
 class ComplejoTag(models.Model):
@@ -17,16 +18,28 @@ class Complejo(models.Model):
     provincia = models.CharField(max_length=300)
     pais = models.CharField(max_length=300)
     coord = models.CharField(max_length=300)
-    tags = models.ManyToManyField(ComplejoTag)
-    users = models.ManyToManyField(User)
+    tags = models.ManyToManyField(ComplejoTag,blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True, null=True, editable=False)
     creado_por = models.ForeignKey(User, null=True, editable=False, related_name='complejo_creado_por')
     modificado = models.DateTimeField(auto_now=True, null=True, editable=False)
     modificado_por = models.ForeignKey(User, null=True, editable=False, related_name='complejo_modificado_por')
-    
+    slug = models.SlugField(null=True)
+
     def __unicode__(self):
         return self.nombre
     
+class ComplejoUsuario(models.Model):
+    complejo = models.ForeignKey(Complejo, null=True)
+    user = models.OneToOneField(User,blank=True, null=True)
+    es_admin = models.BooleanField(default=False)
+    def __unicode__(self):
+        return self.user.username
+
+    def create_complejo_usuario(sender, instance, created, **kwargs):
+        if created:
+            UserProfile.objects.create(user=instance)
+    
+    post_save.connect(create_complejo_usuario, sender=User)
     
 class Cancha(models.Model):
     complejo = models.ForeignKey(Complejo)

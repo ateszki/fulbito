@@ -112,6 +112,9 @@ TEMPLATE_DIRS = (
     # Don't forget to use absolute paths, not relative paths.
 )
 
+# extender usuarios
+AUTH_PROFILE_MODULE = 'canchas.ComplejoUsuario'
+
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
