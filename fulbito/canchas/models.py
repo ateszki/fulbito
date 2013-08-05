@@ -45,26 +45,15 @@ class Cancha(models.Model):
     complejo = models.ForeignKey(Complejo)
     numero = models.IntegerField()
     jugadores = models.IntegerField()
+    es_compuesta = models.BooleanField(default=False)
+    canchas_relacionadas = models.ManyToManyField('self', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True, null=True)
     creado_por = models.ForeignKey(User, null=True, editable=False, related_name='cancha_creado_por')
     modificado = models.DateTimeField(auto_now=True, null=True)
     modificado_por = models.ForeignKey(User, null=True, editable=False, related_name='cancha_modificado_por')
 
     def __unicode__(self):
-        return self.numero
-
-class CanchaCompuesta(models.Model):
-    complejo = models.ForeignKey(Complejo)
-    numero = models.IntegerField()
-    jugadores = models.IntegerField()
-    canchas = models.ManyToManyField(Cancha)
-    creado = models.DateTimeField(auto_now_add=True, null=True)
-    creado_por = models.ForeignKey(User, null=True, editable=False, related_name='cancha_compuesta_creado_por')
-    modificado = models.DateTimeField(auto_now=True, null=True)
-    modificado_por = models.ForeignKey(User, null=True, editable=False, related_name='cancha_compuesta_modificado_por')
-
-    def __unicode__(self):
-        return self.numero
+        return '%s - Cancha %s' % (self.complejo, self.numero)
 
 class Cliente(models.Model):
     nombre = models.CharField(max_length=200)
@@ -90,7 +79,6 @@ class Turno(models.Model):
     hasta = models.DateTimeField()
     cliente = models.ForeignKey(Cliente)
     cancha = models.ForeignKey(Cancha)
-    cancha_compuesta = models.ForeignKey(CanchaCompuesta)
     es_abono = models.BooleanField()
     precio = models.DecimalField(max_digits=8, decimal_places=2)
     ESTADOS_TURNOS = (
@@ -116,7 +104,6 @@ class Abono(models.Model):
     vigencia = models.DateField()
     cliente = models.ForeignKey(Cliente)
     cancha = models.ForeignKey(Cancha)
-    cancha_compuesta = models.ForeignKey(CanchaCompuesta)
     dia = models.IntegerField()
     desde = models.DateTimeField()
     hasta = models.DateTimeField()
