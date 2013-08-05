@@ -45,7 +45,6 @@ class Cancha(models.Model):
     complejo = models.ForeignKey(Complejo)
     numero = models.IntegerField()
     jugadores = models.IntegerField()
-    es_compuesta = models.BooleanField(default=False)
     canchas_relacionadas = models.ManyToManyField('self', blank=True, null=True)
     creado = models.DateTimeField(auto_now_add=True, null=True)
     creado_por = models.ForeignKey(User, null=True, editable=False, related_name='cancha_creado_por')

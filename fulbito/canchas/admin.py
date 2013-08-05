@@ -41,19 +41,23 @@ class CanchaForm(forms.ModelForm):
     
     def __init__(self, *args, **kwargs):
         super(CanchaForm, self).__init__(*args, **kwargs)
-        self.fields['canchas_relacionadas'].queryset = Cancha.objects.filter(complejo=self.instance.complejo)
-        #if self.instance.pk:
+        if self.instance.pk:
+            self.fields['canchas_relacionadas'].queryset = Cancha.objects.filter(complejo=self.instance.complejo)
             #self.fields['complejo'].widget.attrs['readonly'] = True
 
 class CanchaAdmin(admin.ModelAdmin):
     form = CanchaForm
-    #def change_view(self, request, form_url='', extra_context=None):  
-    #    self.exclude=('complejo', )        
-    #    return super(CanchaAdmin, self).add_view(request, form_url='', extra_context=None)
+
+    def get_form(self, request, obj=None, **kwargs):
+        form = super(CanchaAdmin, self).get_form(request, obj, **kwargs)
+        if obj == None:
+           del form.base_fields['canchas_relacionadas']
+        return form
     def get_readonly_fields(self, request, obj=None):
         if obj: # editing an existing object
             return self.readonly_fields + ('complejo',)
-        return self.readonly_fields    
+        return self.readonly_fields
+
 admin.site.register(Cancha, CanchaAdmin)
 
 
